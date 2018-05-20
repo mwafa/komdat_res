@@ -9,12 +9,13 @@ RH_ASK driver;
 // August 17, 2014
 // Public Domain
 
-#define PIN_CS 6
-#define PIN_CLK 7
-#define PIN_DIN 5
+#define PIN_CS 6    // Pin Slave Select pada MAX 7219 terhubung dengan pin 6 Arduino
+#define PIN_CLK 7   // Pin Clock pada MAX 7219 terhubung dengan pin 7 Arduino
+#define PIN_DIN 5   // Pin Data Input MAX 7219 terhubung dengan pin 5 Arduino
 
+// Array untuk menyalakan pola garis pada MAX 7219 penanda X, Y, dan Z
 int tanda[5] = {
-  0b01111011,
+  0b01111011,        
   0b01111101,
   0b01000000,
   0b00000001,
@@ -23,18 +24,18 @@ int tanda[5] = {
 
 void maxTransfer(uint8_t address, uint8_t value) {
 
-    digitalWrite(PIN_CS, LOW);                             // Ensure LOAD/CS is LOW
-    shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,address);            // Send the register address
-    shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,value);              // Send the value     
+    digitalWrite(PIN_CS, LOW);                             // Pastikan pin CS/SS pada kondisi LOW
+    shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,address);            // Send the register address | Kirim perintah ke alamat register
+    shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,value);              // Send the value  | Kirim nilai 
     digitalWrite(PIN_CS, HIGH);
 }
 
 
 void test()
     {
-      maxTransfer(0x0F, 0x01); //test
+      maxTransfer(0x0F, 0x01); //test - Semua lampu menyala
       delay(1000);
-      maxTransfer(0x0F, 0x00);
+      maxTransfer(0x0F, 0x00); // test - Semua lampu kembali normal (mati)
 
       maxTransfer(0x09, 0b00111111); //mode B
 
@@ -45,23 +46,25 @@ void test()
       maxTransfer(0x0C, 0x01);  // Turn on chip
     }
 
-void tampil(String a,int tipe, int aksis)
+void tampil(String a,int tipe, int aksis)  // Fungsi untuk menampilkan tanda koma
 {
-  int koma = a.indexOf(".");
+  int koma = a.indexOf(".");               // Dapatkan index tanda koma (dalam Internasional, koma == titik)
   
   
-  if(koma>-1){
-    a.remove(koma,1);
+  if(koma>-1){                            // Kalau index koma ada (Index mulai dari 0 sampai ~)
+    a.remove(koma,1);                     // Hapus tanda koma biar tidak muncul sebagai karakter sendiri di 7Segment
   }
-  int panjang = a.length();
-  maxTransfer(0x0B, 7);  // cacah digit
-  for( int j = 1; j<=panjang; j++){
+  int panjang = a.length();               // Tentukan panjang data
+  maxTransfer(0x0B, 7);                   // cacah digit
+  for( int j = 1; j<=panjang; j++){       // j adalah index pada 7 segment
       int index = panjang-j;
-      if(String(a[index]) == "-"){
-        maxTransfer(j,10);
-      }else{
-         int nilai = index == koma-1 ? 0xF0|String(a[index]).toInt():String(a[index]).toInt();
-         maxTransfer(j,nilai);
+      if(String(a[index]) == "-"){        // Kalau ketemu tanda negatif
+        maxTransfer(j,10);                // Kirim angka 10 ( Biner 10 == 1010 untuk menghidupkan tanda negatif)
+      }else{                              // Jika bukan tanda koma
+         int nilai = index == koma-1 ? 0xF0|String(a[index]).toInt():String(a[index]).toInt(); 
+         // Baris atas: Kalau misalnya index angka itu di depan tanda koma, maka berikan tanda koma (lanjut)
+         // pada angka tersebut. Nantinya angka akan ditampilkan dengan dot point (dp). 
+         maxTransfer(j,nilai);            // Nyalakan lampu dengan pola sesuai nilai (Angka dan koma) 
       }
   }
   for(int j = panjang+1 ; j <= 8;j++ )
