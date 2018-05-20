@@ -30,21 +30,23 @@ void test()
 void tampil(String a)
 {
   int koma = a.indexOf(".");
+  
+  
   if(koma>-1){
     a.remove(koma,1);
   }
   int panjang = a.length();
+  maxTransfer(0x0B, panjang-1);  // cacah digit
   for( int j = 1; j<=panjang; j++){
       int index = panjang-j;
       if(String(a[index]) == "-"){
         maxTransfer(j,10);
       }else{
-         int nilai = index == koma ? 0xF0|String(a[index]).toInt():String(a[index]).toInt();
+         int nilai = index == koma-1 ? 0xF0|String(a[index]).toInt():String(a[index]).toInt();
          maxTransfer(j,nilai);
       }
   }
 }
-
 void setup()
 {
   pinMode(PIN_CS,OUTPUT);
@@ -54,6 +56,7 @@ void setup()
   Serial.begin(9600);
 }
 void loop(){
-  tampil(String(-34.567));
-  delay(1000);
+  tampil(String(k));
+  k+=.01;
+  delay(500);
 }
