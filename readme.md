@@ -1,0 +1,14 @@
+# Responsi Komdat
+
+> Sesungguhnya pelajaran paling berharga adalah pengalaman.
+> Karena usia kita yang terbatas, maka kita perlu mempelajari pengalaman orang lain.
+> Membaca adalah kunci memahami pengalaman orang lain.
+-- Wafa,2018
+
+***
+
+> "_Fa, kok kodingnya gak ada?_"
+
+> Pahamilah bagaimana `komunikasi` itu, maka kamu bisa membuat karyamu sendiri. Setiap hasil pemikiranmu, akan membuat rasa kebanggaan itu datang, rasa yang tak akan kamu temukan jika bukan kamu yang membuatnya.
+
+***
