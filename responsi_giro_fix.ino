@@ -15,11 +15,11 @@ RH_ASK driver;
 
 // Array untuk menyalakan pola garis pada MAX 7219 penanda X, Y, dan Z
 int tanda[5] = {
-  0b01111011,        
-  0b01111101,
-  0b01000000,
-  0b00000001,
-  0b00001000
+  0b01111011,        // lambang g
+  0b01111101,        // lambang a
+  0b01000000,        // lambang x (`)
+  0b00000001,        // lambang y (-)
+  0b00001000         // lambang z (_)
 };
 
 void maxTransfer(uint8_t address, uint8_t value) {
@@ -33,17 +33,13 @@ void maxTransfer(uint8_t address, uint8_t value) {
 
 void test()
     {
-      maxTransfer(0x0F, 0x01); //test - Semua lampu menyala
+      maxTransfer(0x0F, 0x01);       // test - Semua lampu menyala
       delay(1000);
-      maxTransfer(0x0F, 0x00); // test - Semua lampu kembali normal (mati)
-
-      maxTransfer(0x09, 0b00111111); //mode B
-
-      maxTransfer(0x0A, 0x0D); //intensitas
-      
-      maxTransfer(0x0B, 0x07);  // cacah digit
-      
-      maxTransfer(0x0C, 0x01);  // Turn on chip
+      maxTransfer(0x0F, 0x00);       // test - Semua lampu kembali normal (mati)
+      maxTransfer(0x09, 0b00111111); // mode B dengan 2 digit paling depan tidak di decode.
+      maxTransfer(0x0A, 0x0D);       // intensitas
+      maxTransfer(0x0B, 0x07);       // cacah digit
+      maxTransfer(0x0C, 0x01);       // Turn on chip
     }
 
 void tampil(String a,int tipe, int aksis)  // Fungsi untuk menampilkan tanda koma
