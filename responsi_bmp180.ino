@@ -62,7 +62,7 @@ void tampil(String a)
 }
 
 
-void kirim(bool P)
+void kirim(double P)
 {
   char *msg = strdup(("P="+String(P)+"__").c_str());
   driver.send((uint8_t *)msg, strlen(msg));
@@ -207,6 +207,5 @@ void loop()
 
   kirim(P); //kirim via radio
   
-  delay(200);
   delay(1000);  // Pause for 5 seconds.
 }
