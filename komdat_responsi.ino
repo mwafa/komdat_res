@@ -1,6 +1,7 @@
-#define PIN_CS 5
-#define PIN_CLK 6
-#define PIN_DIN 7
+
+#define PIN_CS 6
+#define PIN_CLK 7
+#define PIN_DIN 5
 
 void maxTransfer(uint8_t address, uint8_t value) {
 
@@ -21,64 +22,38 @@ void test()
 
       maxTransfer(0x0A, 0x0D); //intensitas
       
-      maxTransfer(0x0B, 0x00);  // cacah digit
+      maxTransfer(0x0B, 0x07);  // cacah digit
       
       maxTransfer(0x0C, 0x01);  // Turn on chip
     }
 
-void tampil(int i)
+void tampil(String a)
 {
-  String s = String(i);
-  int l = s.length();
-
-  maxTransfer(0x2C,0);
-  maxTransfer(0x2B,l-1);
-  maxTransfer(0x2C,1);
-  
-  for( int j = 1; j<=l; j++){
-    if(s[l-j] == "-")
-    {
-       maxTransfer(j,0b1010);
-    }else{
-       maxTransfer(j,int(s[l-j]));
-    }
+  int koma = a.indexOf(".");
+  if(koma>-1){
+    a.remove(koma,1);
+  }
+  int panjang = a.length();
+  for( int j = 1; j<=panjang; j++){
+      int index = panjang-j;
+      if(String(a[index]) == "-"){
+        maxTransfer(j,10);
+      }else{
+         int nilai = index == koma ? 0xF0|String(a[index]).toInt():String(a[index]).toInt();
+         maxTransfer(j,nilai);
+      }
   }
 }
 
-
-#include <Wire.h>
-#include <BH1750.h>
-
-BH1750 lightMeter;
-
-
-void setup() {
-  // put your setup code here, to run once:
+void setup()
+{
   pinMode(PIN_CS,OUTPUT);
   pinMode(PIN_CLK,OUTPUT);
   pinMode(PIN_DIN,OUTPUT);
   test();
   Serial.begin(9600);
-
-  // Initialize the I2C bus (BH1750 library doesn't do this automatically)
-  Wire.begin();
-  // On esp8266 you can select SCL and SDA pins using Wire.begin(D4, D3);
-
-  lightMeter.begin();
-
-  Serial.println(F("BH1750 Test begin"));
- 
 }
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  
-  uint16_t lux = lightMeter.readLightLevel();
-  Serial.print("Light: ");
-  Serial.print(lux);
-  Serial.println(" lx");
-  
-  tampil(lux);
-  delay(200);
-
+void loop(){
+  tampil(String(-34.567));
+  delay(1000);
 }
