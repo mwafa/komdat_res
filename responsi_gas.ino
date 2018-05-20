@@ -2,8 +2,8 @@
 #include <RH_ASK.h>
 #include <SPI.h> // Not actually used but needed to compile
 
-// Alamat dari sensor
-#define ADDR 0x23  
+// Alamat sensor GAS
+#define ADDR 0x70
 
 // Mendefinisikan pin dari SPI
 #define PIN_CS 6
@@ -13,17 +13,9 @@
 
 RH_ASK driver;
 
-// Funsi untuk menyalakan sensor (mematikan _sleep mode_)
-void hidupkan(){
-  Wire.beginTransmission(ADDR);
-  Wire.write(0x01);
-  Wire.endTransmission();
-
-}
 
 // Funsi untuk kirim SPI dari arduino ke 7Segment
 void maxTransfer(uint8_t address, uint8_t value) {
-
     digitalWrite(PIN_CS, LOW);                             // pin CS harus LOW sebelum krim data
     shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,address);            // Kirim alamat (perintah)
     shiftOut(PIN_DIN,PIN_CLK,MSBFIRST,value);              // Kirim nilai (parameter)  
@@ -33,19 +25,17 @@ void maxTransfer(uint8_t address, uint8_t value) {
 
 
 void test()
-    {
-      maxTransfer(0x0F, 0x01); // Test - Menyalakan semua lampu di 7segment
-      delay(1000);
-      maxTransfer(0x0F, 0x00); // Mengembalikan dari keadaan test
+{
+  maxTransfer(0x0F, 0x01); // Test - Menyalakan semua lampu di 7segment
+  delay(1000);
+  maxTransfer(0x0F, 0x00); // Mengembalikan dari keadaan test
 
-      maxTransfer(0x09, 0xFF); // Mode B (data didecode)
+  maxTransfer(0x09, 0xFF); // Mode B (data didecode)
+  maxTransfer(0x0A, 0x0D); // Pengaturan intensitas dari 7segment
+  maxTransfer(0x0B, 0x07); // Alamat 0x0B untuk mengatur jumlah digit yang menyala 7 -> 8 digit menyala. 
+  maxTransfer(0x0C, 0x01);  // Menghidupkan MAX7219 (agar tidak dalam sleep mode).
+}
 
-      maxTransfer(0x0A, 0x0D); // Pengaturan intensitas dari 7segment
-      
-      maxTransfer(0x0B, 0x07); // Alamat 0x0B untuk mengatur jumlah digit yang menyala 7 -> 8 digit menyala. 
-      
-      maxTransfer(0x0C, 0x01);  // Menghidupkan MAX7219 (agar tidak dalam sleep mode).
-    }
 
 void tampil(String a) // Funsi untuk menampilkan ke 7segment
 {
@@ -81,7 +71,7 @@ void kirim(String nama,int16_t data){
     
 
 void setup() {
-  // Deklarasi pin sebagai OUTPUT untuk mengirim data dengan mode SPI
+    // Deklarasi pin sebagai OUTPUT untuk mengirim data dengan mode SPI
   pinMode(PIN_CS,OUTPUT);
   pinMode(PIN_CLK,OUTPUT);
   pinMode(PIN_DIN,OUTPUT);
@@ -89,25 +79,20 @@ void setup() {
   test();  // Test 7segment
 
   driver.init();
-  Wire.begin();
-
-  Serial.begin(57600);
-  
+  Wire.begin();        
+  Serial.begin(9600);\
 }
 
 void loop() {
-  hidupkan();
   Wire.beginTransmission(ADDR);
-  Wire.write(0x13);  // Perintah untuk membaca sensor pada low resolution.
+  Wire.write(0x41); // Perintah Membaca sensor
   Wire.endTransmission(false);
-  delay(16);         // Waktu delay antara perintah dan respon (sesuai datasheet).
   Wire.requestFrom(ADDR,2,true);
-  uint16_t lux = Wire.read()<<8|Wire.read();
-  Serial.println(lux);
-  
-  tampil(String(lux)); //Menampilkan pada 7segment
-  
-  kirim("Lux",lux);    //Pengiriman data melalui radio
+  delayMicroseconds(10);
+  int16_t temp1 = Wire.read()<<8|Wire.read();
+  Serial.println(temp1);
+
+  kirim("Gas:",temp1);
+  tampil(String(temp1));
   delay(500);
-  
 }
