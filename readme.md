@@ -12,3 +12,6 @@
 > Pahamilah bagaimana `komunikasi` itu, maka kamu bisa membuat karyamu sendiri. Setiap hasil pemikiranmu, akan membuat rasa kebanggaan itu datang, rasa yang tak akan kamu temukan jika bukan kamu yang membuatnya.
 
 ***
+
+Link Tambahan:
+[Klik Disini](https://github.com/mwafa/komdat_res/wiki)
