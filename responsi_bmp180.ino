@@ -78,6 +78,7 @@ void setup()
   pinMode(PIN_CLK,OUTPUT);
   pinMode(PIN_DIN,OUTPUT);
   test();
+  driver.init();
   // Initialize the sensor (it is important to get calibration values stored on the device).
 
   if (pressure.begin())
